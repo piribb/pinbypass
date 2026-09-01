@@ -1,26 +1,37 @@
 package com.bypass.pinbypass;
 
 import android.util.Log;
-import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import io.github.libxposed.api.XposedInterface;
+import io.github.libxposed.api.XposedModule;
+import io.github.libxposed.api.XposedModuleInterface;
+import io.github.libxposed.api.XposedInterface.MethodUnhooker;
 
-public class MainHook implements IXposedHookLoadPackage {
+import java.lang.reflect.Method;
+
+public class MainHook extends XposedModule {
+
+    private static final String TARGET_PKG = "com.google.android.gms.supervision";
+
+    public MainHook(XposedInterface base, XposedModuleInterface.ModuleLoadedParam param) {
+        super(base, param);
+    }
+
     @Override
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) {
-        if (!lpparam.packageName.equals("com.google.android.gms.supervision")) return;
+    public void onPackageLoaded(XposedModuleInterface.PackageLoadedParam param) {
+        if (!param.getPackageName().equals(TARGET_PKG)) return;
         try {
-            Class<?> rod = lpparam.classLoader.loadClass("rod");
-            XposedHelpers.findAndHookMethod(rod, "S", String.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    param.setResult(true);
-                }
-            });
-            Log.d("PinBypass", "Hook success");
-        } catch (Exception e) {
-            Log.e("PinBypass", "Hook failed: " + e.getMessage());
+            Class<?> rodClass = param.getClassLoader().loadClass("rod");
+            Method m = rodClass.getDeclaredMethod("S", String.class);
+            hook(m, PinHooker.class);
+            log("PinBypass: hooked rod.S()");
+        } catch (Throwable e) {
+            log("PinBypass: hook failed - " + e);
+        }
+    }
+
+    public static class PinHooker implements XposedInterface.Hooker {
+        public static void before(XposedInterface.BeforeHookCallback callback) {
+            callback.returnAndSkip(true);
         }
     }
 }
