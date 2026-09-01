@@ -17,12 +17,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Download libxposed
-        run: |
-          mkdir -p app/libs
-          curl -L "https://github.com/libxposed/api/releases/download/100/api-release.aar" -o app/libs/libxposed-api.aar || \
-          curl -L "https://github.com/libxposed/api/releases/latest/download/api-release.aar" -o app/libs/libxposed-api.aar
-
       - name: Build APK
         run: |
           chmod +x gradlew
