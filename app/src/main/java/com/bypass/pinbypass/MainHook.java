@@ -1,40 +1,26 @@
 package com.bypass.pinbypass;
 
-import io.github.libxposed.api.XposedInterface;
-import io.github.libxposed.api.XposedModule;
-import io.github.libxposed.api.XposedModuleInterface;
-import io.github.libxposed.api.annotations.BeforeInvocation;
-import io.github.libxposed.api.annotations.XposedHooker;
+import android.util.Log;
+import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class MainHook extends XposedModule {
-
-    private static final String TAG = "PinBypass";
-    private static final String TARGET_PKG = "com.google.android.gms.supervision";
-
-    public MainHook(XposedInterface base, XposedModuleInterface.ModuleLoadedParam param) {
-        super(base, param);
-        log(TAG + " loaded");
-    }
-
+public class MainHook implements IXposedHookLoadPackage {
     @Override
-    public void onPackageLoaded(XposedModuleInterface.PackageLoadedParam param) {
-        if (!param.getPackageName().equals(TARGET_PKG)) return;
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) {
+        if (!lpparam.packageName.equals("com.google.android.gms.supervision")) return;
         try {
-            Class<?> rodClass = param.getClassLoader().loadClass("rod");
-            hookMethod(
-                rodClass.getDeclaredMethod("S", String.class),
-                RodSHooker.class
-            );
+            Class<?> rod = lpparam.classLoader.loadClass("rod");
+            XposedHelpers.findAndHookMethod(rod, "S", String.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    param.setResult(true);
+                }
+            });
+            Log.d("PinBypass", "Hook success");
         } catch (Exception e) {
-            log(TAG + ": hook failed — " + e.getMessage());
-        }
-    }
-
-    @XposedHooker
-    static class RodSHooker implements XposedInterface.Hooker {
-        @BeforeInvocation
-        public static void before(XposedInterface.BeforeHookCallback callback) {
-            callback.returnAndSkip(true);
+            Log.e("PinBypass", "Hook failed: " + e.getMessage());
         }
     }
 }
