@@ -24,9 +24,5 @@ android {
 }
 
 dependencies {
-    compileOnly 'com.github.libxposed:api:100.2.2.20250517'
-}
-
-repositories {
-    maven { url 'https://api.xposed.info/' }
+    compileOnly 'io.github.libxposed:api:102.0.0'
 }
