@@ -1,32 +1,17 @@
-plugins {
-    id 'com.android.application'
-}
-
-android {
-    namespace "com.bypass.pinbypass"
-    compileSdk 34
-    defaultConfig {
-        applicationId "com.bypass.pinbypass"
-        minSdk 26
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.0'
     }
 }
 
-dependencies {
-    compileOnly 'io.github.libxposed:api:100.2.2'
-}
-
-repositories {
-    maven { url 'https://jitpack.io' }
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
 }
