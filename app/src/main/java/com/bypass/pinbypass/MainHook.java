@@ -2,17 +2,15 @@ package com.bypass.pinbypass;
 
 import io.github.libxposed.api.XposedInterface;
 import io.github.libxposed.api.XposedModule;
-import io.github.libxposed.api.XposedModuleInterface.ModuleLoadedParam;
 import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 public class MainHook extends XposedModule {
 
     private static final String TARGET_PKG = "com.google.android.gms.supervision";
 
-    public MainHook(XposedInterface base, ModuleLoadedParam param) {
+    public MainHook() {
     }
 
     @Override
