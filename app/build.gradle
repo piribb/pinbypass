@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace 'com.bypass.pinbypass'
     compileSdk 34
     defaultConfig {
         applicationId "com.bypass.pinbypass"
